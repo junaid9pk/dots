@@ -1,8 +1,7 @@
-# dots (Configurations in motion)
+# Configurations in motion
 
-My portable, cross-platform terminal and developer environment. 
 
-This repository contains only the CLI and terminal-based tools that I take with me to every machine (like my work laptop), cleanly separated from my heavier, OS-specific desktop configurations.
+This repository contains only the CLI and terminal-based tools that I take with me to every machine.
 
 ## Contents
 - **Neovim** (`nvim/`)
