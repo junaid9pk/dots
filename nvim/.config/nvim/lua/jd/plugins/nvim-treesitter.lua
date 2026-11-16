@@ -1,70 +1,40 @@
+local languages = {
+    "c",
+    "vim",
+    "vimdoc",
+    "query",
+    "html",
+    "javascript",
+    "typescript",
+    "lua",
+    "bash",
+    "sql",
+    "c_sharp",
+    "php",
+    "blade",
+    "go",
+    "gomod",
+    "gowork",
+    "gosum",
+}
+
 return {
     "nvim-treesitter/nvim-treesitter",
     branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    config = function ()
-        -- get_parser_configs is removed in nvim-treesitter main branch.
-        -- local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-        -- parser_config.blade = {
-        --   install_info = {
-        --     url = "https://github.com/EmranMR/tree-sitter-blade",
-        --     files = {"src/parser.c"},
-        --     branch = "main",
-        --   },
-        --   filetype = "blade"
-        -- }
+    config = function()
+        require("nvim-treesitter").install(languages)
 
-        require("nvim-treesitter").setup({
-            ensure_installed = {
-                "c",
-                "vim",
-                "vimdoc",
-                "query",
-                "html",
-                "javascript",
-                "typescript",
-                "lua",
-                "vim",
-                "bash",
-                "sql",
-                "c_sharp",
-                "php",
-                "blade",
-                "go",
-                "gomod",
-                "gowork",
-                "gosum"
-            },
-            auto_install = true,
-            highlight = {
-                enable = true,
-                additional_vim_regex_highlighting = false,
-            },
-            injections = {
-                blade = {
-                    javascript = {
-                        pattern = [[
-                            (script_element
-                            (raw_text) @javascript)
-                            (php_block
-                            (raw_text) @javascript)
-                        ]],
-                    },
-                    php = {},
-                    html = {
-                        pattern = [[
-                            (element
-                            (raw_text) @html)
-                        ]],
-                    },
-                },
-            },
-            indent = {
-                enable = true,
-            },
-            incremental_selection = {
-                enable = true,
-            }
+        -- main branch no longer enables highlight/indent itself; see :h treesitter-highlight
+        vim.api.nvim_create_autocmd("FileType", {
+            callback = function(ev)
+                local lang = vim.treesitter.language.get_lang(ev.match)
+                if not lang or not pcall(vim.treesitter.start, ev.buf, lang) then
+                    return
+                end
+                vim.bo[ev.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end,
         })
-    end
+    end,
 }
